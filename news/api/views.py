@@ -23,3 +23,40 @@ def article_list_create_api_view(request):
 
         return Response(status = status.HTTP_400_BAD_REQUEST)  # valid değilse status = 400 dönüyoruz
 
+@api_view(["GET", "PUT", "DELETE"])
+def article_detail_api_view(request, pk):
+
+    # error handling
+    try:
+        article_instance = Article.objects.get(pk = pk)  # taking specific instance while considering primary key
+
+    except Article.DoesNotExist:
+        return Response(
+            {
+                "errors":{
+                    "code":404,
+                    "message": f"There is no id:{pk} article"
+                }
+            },
+            status = status.HTTP_404_NOT_FOUND
+        )
+
+    if(request.method == "GET"):
+        serializer = ArticleSerializer(article_instance)
+        return Response(serializer.data)
+
+    elif(request.method == "PUT"):
+        serializer = ArticleSerializer(article_instance, data = request.data)
+        if(serializer.is_valid()):
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(status = status.HTTP_400_BAD_REQUEST)
+
+    elif(request.method == "DELETE"):
+        article_instance.delete()
+
+        return Response(
+            {"message": f"The id:{pk} article is deleted"},
+            status = status.HTTP_204_NO_CONTENT
+        )

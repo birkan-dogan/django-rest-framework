@@ -3,6 +3,7 @@ from ..models import Article
 
 # without using ModelSerializer
 class ArticleSerializer(serializers.Serializer):
+    id = serializers.CharField()
     author = serializers.CharField()
     title = serializers.CharField()
     description = serializers.CharField()

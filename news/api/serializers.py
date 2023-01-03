@@ -35,3 +35,20 @@ class ArticleSerializer(serializers.Serializer):
         instance.save()
 
         return instance
+
+
+    def validate(self, data):
+        # title and description cannot be the same text
+
+        if(data["title"] == data["description"]):
+            raise serializers.ValidationError("Title and Description cannot be the same text")
+
+        return data
+
+    # Title need minimum 20 characters
+    def validate_title(self, value):
+
+        if(len(value) < 20):
+            raise serializers.ValidationError(f"Title need minimum 20 characters, at least enter {20 - len(value)} character")
+
+        return value

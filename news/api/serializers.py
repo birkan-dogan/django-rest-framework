@@ -1,8 +1,40 @@
 from rest_framework import serializers
 from ..models import Article
 
+from datetime import datetime, date
+from django.utils.timesince import timesince
+# with using ModelSerializer
+class ArticleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Article
+        fields = "__all__"  # fields = ["author", "title", "description"]
+        read_only_fields = ["id", "created_date", "updated_date"]
+
+    # adding new field to our serializer without doing anything in views or models
+    time_since_pub = serializers.SerializerMethodField()
+
+    def get_time_since_pub(self, object):
+        now = datetime.now()
+        pub_date = object.created_date
+        if(object.is_active):
+            time_delta = timesince(pub_date, now)
+            return time_delta
+
+        else:
+            return "It is deactive"
+
+    # field validation with ModelSerializer
+    def validate_created_date(self, value):
+        today = date.today()
+
+        if(value > today):
+            raise serializers.ValidationError(f"{value} cannot be bigger than today's date")
+
+        return value
+
 # without using ModelSerializer
-class ArticleSerializer(serializers.Serializer):
+class ArticleDefaultSerializer(serializers.Serializer):
     id = serializers.CharField()
     author = serializers.CharField()
     title = serializers.CharField()

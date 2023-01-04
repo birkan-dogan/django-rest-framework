@@ -1,10 +1,11 @@
 from django.urls import path
 
-from .views import ArticleListCreateAPIView, ArticleDetailAPIView
+from .views import ArticleListCreateAPIView, ArticleDetailAPIView, WriterListCreateAPIView
 
 # urlpatterns for class-based views
 urlpatterns = [
     path("articles/", ArticleListCreateAPIView.as_view(), name="list-of-articles"),
+    path("writers", WriterListCreateAPIView.as_view(), name = "list-of-writers"),
     path("articles/<int:pk>",ArticleDetailAPIView.as_view(), name = "article-detail")
 ]
 

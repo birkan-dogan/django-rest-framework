@@ -75,7 +75,7 @@ class WriterListCreateAPIView(APIView):
     def get(self, request):
 
         writers = Writer.objects.all()
-        serializer = WriterSerializer(writers, many = True)
+        serializer = WriterSerializer(writers, many = True, context = {"request": request})
         return Response(serializer.data)
 
 

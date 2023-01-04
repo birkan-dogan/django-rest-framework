@@ -44,7 +44,14 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 class WriterSerializer(serializers.ModelSerializer):
 
-    articles = ArticleSerializer(read_only = True, many = True)  # If article is read_only, we can create a new Writer without articles
+    # articles = ArticleSerializer(read_only = True, many = True)  # If article is read_only, we can create a new Writer without articles
+
+    articles = serializers.HyperlinkedRelatedField(
+        many = True,
+        read_only = True,
+        view_name = "article-detail",
+        # HyperlinkedRelatedField requires the request in the serializer context. Add `context={"request":request} when instantiating the serializer`
+    )
 
     class Meta:
         model = Writer

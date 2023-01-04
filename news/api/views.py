@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 
-from ..models import Article
-from .serializers import ArticleSerializer
+from ..models import Article, Writer
+from .serializers import ArticleSerializer, WriterSerializer
 
 # function-based views
 """
@@ -69,6 +69,23 @@ def article_detail_api_view(request, pk):
 
 from rest_framework.views import APIView
 from rest_framework.generics import get_object_or_404
+
+class WriterListCreateAPIView(APIView):
+
+    def get(self, request):
+
+        writers = Writer.objects.all()
+        serializer = WriterSerializer(writers, many = True)
+        return Response(serializer.data)
+
+
+    def post(self, request):
+
+        serializer = WriterSerializer(data = request.data)
+        if(serializer.is_valid()):
+            serializer.save()
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
 class ArticleListCreateAPIView(APIView):
 

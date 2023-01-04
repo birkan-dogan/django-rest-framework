@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from ..models import Article
+from ..models import Article, Writer
 
 from datetime import datetime, date
 from django.utils.timesince import timesince
+
 # with using ModelSerializer
 class ArticleSerializer(serializers.ModelSerializer):
 
@@ -13,6 +14,13 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     # adding new field to our serializer without doing anything in views or models
     time_since_pub = serializers.SerializerMethodField()
+
+    """
+    author = serializers.StringRelatedField() --> to see author's first_name and last_name instead of author's id, but this will not work when we post author field.
+
+    author = WriterSerializer()  --> this will not work when we want to create an author
+
+    """
 
     def get_time_since_pub(self, object):
         now = datetime.now()
@@ -32,6 +40,17 @@ class ArticleSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(f"{value} cannot be bigger than today's date")
 
         return value
+
+
+class WriterSerializer(serializers.ModelSerializer):
+
+    articles = ArticleSerializer(read_only = True, many = True)  # If article is read_only, we can create a new Writer without articles
+
+    class Meta:
+        model = Writer
+        fields = "__all__"
+
+
 
 # without using ModelSerializer
 class ArticleDefaultSerializer(serializers.Serializer):
